@@ -161,6 +161,60 @@ or:
 .\scripts\setup_lab_pc_windows.ps1
 ```
 
+Lab Mac mini M1 setup from GitHub:
+
+```bash
+git clone https://github.com/ghaly-jd/Subspace-Doppelg-nger Subspace-Doppelganger
+cd Subspace-Doppelganger
+```
+
+Install Python 3.10 if it is not already installed:
+
+```bash
+brew install python@3.10
+```
+
+Create the local venv and install dependencies:
+
+```bash
+python3.10 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install -r requirements.txt
+```
+
+or:
+
+```bash
+bash scripts/setup_mac.sh
+```
+
+Download the YOLO11 pose model on the lab Mac:
+
+```bash
+python tools/download_models.py yolo11n-pose
+```
+
+Run the app:
+
+```bash
+python app.py --config configs/mac_mini.yaml
+```
+
+For the TV/fullscreen demo mode, run:
+
+```bash
+python app.py --config configs/lab_pc.yaml
+```
+
+On first launch, macOS may ask for camera permission. If the camera does not open, go to:
+
+```text
+System Settings -> Privacy & Security -> Camera
+```
+
+Then enable camera access for Terminal, iTerm, or whichever terminal app launched Python.
+
 For detailed transfer steps, see `DEPLOYMENT.md`.
 
 ## Running
