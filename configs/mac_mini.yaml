@@ -1,0 +1,136 @@
+camera:
+  source: 0
+  backend: avfoundation
+  width: 1280
+  height: 720
+  fps: 30
+
+runtime:
+  device: cpu
+  fullscreen: false
+
+ui:
+  screen_width: 1280
+  screen_height: 720
+
+pose:
+  engine: yolo
+  model_path: models/yolo/yolo11n-pose.pt
+  delegate: cpu
+  min_detection_confidence: 0.35
+  min_tracking_confidence: 0.35
+  min_visibility: 0.1
+  force_draw: true
+  debug_full_landmarks: true
+  smoothing_alpha: 0.25
+
+capture:
+  countdown_seconds: 3
+  registration_seconds: 6
+  query_seconds: 6
+  min_tracked_frames: 10
+
+ritual:
+  name: Motion Ritual
+  total_seconds: 29
+  min_tracked_frames: 300
+  min_accept_similarity: 55
+  phases:
+    - id: calibration_pose
+      label: Calibration Pose
+      prompt: Stand still.
+      duration_seconds: 3
+    - id: lateral_step
+      label: Lateral Step Scan
+      prompt: Step left. Step right. Return center.
+      duration_seconds: 4
+    - id: arm_raise
+      label: Arm Raise Scan
+      prompt: Raise both arms. Lower them.
+      duration_seconds: 3
+      profile: upper_body
+    - id: squat
+      label: Squat Scan
+      prompt: Squat down. Stand up.
+      duration_seconds: 4
+    - id: rotation
+      label: Rotation Scan
+      prompt: Turn left. Turn right.
+      duration_seconds: 4
+    - id: balance_hold
+      label: Balance Hold
+      prompt: Lift one knee. Hold. Return.
+      duration_seconds: 4
+    - id: wave_hello
+      label: Wave Hello
+      prompt: Wave hello.
+      duration_seconds: 3
+      profile: upper_body
+    - id: clap_twice
+      label: Clap Twice
+      prompt: Clap twice.
+      duration_seconds: 2
+      profile: upper_body
+    - id: point_forward
+      label: Point Forward
+      prompt: Point forward.
+      duration_seconds: 2
+      profile: upper_body
+
+ritual_segmentation:
+  event_based: true
+  event_padding_ratio: 0.45
+
+ritual_quality:
+  full_min_confidence: 0.45
+  phase_min_confidence: 0.25
+  phase_min_activity: 0.005
+  enforce_required_phase_gates: true
+  required_phases:
+    - squat
+    - balance_hold
+    - wave_hello
+    - clap_twice
+  per_phase:
+    squat:
+      min_hip_drop: 0.03
+    balance_hold:
+      min_knee_lift: 0.02
+    wave_hello:
+      min_wrist_activity: 0.10
+    clap_twice:
+      min_wrist_activity: 0.04
+
+subspace:
+  num_frames: 120
+  dimension_k: 5
+  similarity_alpha: 1.5
+  smooth_window: 5
+
+ritual_scoring:
+  overall:
+    full_coordinate_subspace: 0.35
+    average_phase: 0.20
+    full_velocity_subspace: 0.15
+    rhythm: 0.10
+    joint_angles: 0.10
+    energy_balance: 0.10
+  phase:
+    coordinate_subspace: 0.35
+    velocity_subspace: 0.20
+    speed_dtw: 0.20
+    speed_dtw_alpha: 3.0
+    rhythm: 0.10
+    joint_angles: 0.15
+
+motion_profiles:
+  wave:
+    dimension_k: 3
+    similarity_alpha: 0.35
+    min_accept_similarity: 70
+
+data:
+  root: data
+  registrations_dir: data/registrations
+  sessions_dir: data/sessions
+  database_path: data/database.json

@@ -1,0 +1,12 @@
+# Core runtime dependencies for V1.
+# Use Python 3.10 on both Mac mini and lab PC.
+# These versions were verified on the Mac mini venv on 2026-05-20.
+
+numpy==1.26.4
+scipy==1.15.3
+scikit-learn==1.7.2
+opencv-python==4.11.0.86
+mediapipe==0.10.21
+PyQt6==6.11.0
+PyYAML==6.0.3
+ultralytics==8.3.233

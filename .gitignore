@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env
+
+# IDE and OS noise
+.DS_Store
+.idea/
+.vscode/
+
+# Generated app data
+data/registrations/*
+data/sessions/*
+data/database.json
+!data/registrations/.gitkeep
+!data/sessions/.gitkeep
+
+# Local captures and exports
+*.mp4
+*.mov
+*.avi
+*.mkv
+exports/
+
+# Large local model files
+models/**/*.pt
+models/**/*.onnx
+models/**/*.task
+models/**/*.tflite
+models/**/*.engine
+models/**/*.bin
+!models/README.md
