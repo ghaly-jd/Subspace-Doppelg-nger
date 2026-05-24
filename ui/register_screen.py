@@ -13,6 +13,8 @@ from PyQt6.QtWidgets import (
     QLineEdit,
     QApplication,
     QPushButton,
+    QScrollArea,
+    QSizePolicy,
     QVBoxLayout,
 )
 
@@ -75,9 +77,10 @@ class RegisterScreen(BaseScreen):
         form.addRow("Mode", self.motion_select)
 
         self.preview = QLabel("Camera preview inactive")
-        self.preview.setMinimumSize(640, 300)
+        self.preview.setMinimumSize(480, 220)
         self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.preview.setScaledContents(False)
+        self.preview.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Ignored)
 
         self.phase_title = QLabel("READY")
         self.phase_title.setObjectName("phasePromptTitle")
@@ -112,7 +115,12 @@ class RegisterScreen(BaseScreen):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_capture_frame)
 
-        root.addWidget(panel, 1)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setWidget(panel)
+
+        root.addWidget(scroll, 1)
         self.add_back_button(root)
         self._refresh_start_button()
 

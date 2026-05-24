@@ -1,6 +1,6 @@
 # Project Status
 
-Last updated: 2026-05-23
+Last updated: 2026-05-24
 
 ## Overall Status
 
@@ -104,6 +104,15 @@ Next target: run a real camera-based Motion Ritual registration and visitor scan
 - Matching quality depends on having enough registered examples per motion type.
 
 ## Latest Work Log
+
+### 2026-05-24
+
+- Changed lab PC startup from hard `showFullScreen()` to configurable display modes, with `configs/lab_pc.yaml` now defaulting to maximized mode for better cross-display behavior.
+- Added screen-aware startup geometry so configured window sizes are clamped to the active display's usable area and centered instead of opening partly off-screen.
+- Added `F11` fullscreen toggle and `Esc` fullscreen exit so demo setup can recover when true fullscreen lands on the wrong display.
+- Documented display-mode troubleshooting for TV deployment.
+- Stabilized camera preview layouts so pixmaps do not push lower controls off-screen, and made register, match, and live preview panels scrollable on smaller displays.
+- Stabilized the skeleton comparison replay layout with a scrollable panel and responsive canvas sizing so playback controls are not pushed below the window.
 
 ### 2026-05-23
 

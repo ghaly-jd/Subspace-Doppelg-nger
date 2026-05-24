@@ -8,10 +8,13 @@ camera:
 runtime:
   device: cpu
   fullscreen: false
+  display_mode: windowed
+  screen_index: 0
 
 ui:
   screen_width: 1280
   screen_height: 720
+  window_scale: 0.95
 
 pose:
   engine: yolo

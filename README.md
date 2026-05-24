@@ -201,11 +201,13 @@ Run the app:
 python app.py --config configs/mac_mini.yaml
 ```
 
-For the TV/fullscreen demo mode, run:
+For the TV demo mode, run:
 
 ```bash
 python app.py --config configs/lab_pc.yaml
 ```
+
+`configs/lab_pc.yaml` starts maximized by default so the app respects the active display's usable area and keeps the normal window controls available. Press `F11` to toggle true fullscreen after the window is on the right display, and press `Esc` to leave fullscreen.
 
 On first launch, macOS may ask for camera permission. If the camera does not open, go to:
 
@@ -294,7 +296,7 @@ Debug mode:
 python app.py --config configs/debug.yaml
 ```
 
-Lab PC fullscreen mode:
+Lab PC TV mode:
 
 ```bash
 python app.py --config configs/lab_pc.yaml

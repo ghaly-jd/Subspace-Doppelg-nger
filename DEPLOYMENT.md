@@ -264,7 +264,7 @@ Do not hardcode:
 
 - Camera ID.
 - Screen size.
-- Fullscreen mode.
+- Display mode.
 - Pose engine.
 - Model path.
 - Data path.
@@ -281,7 +281,7 @@ Those belong in config files.
 6. Check camera source with `tools/check_camera.py` once it exists.
 7. Confirm `configs/lab_pc.yaml` camera source.
 8. Run app with `configs/lab_pc.yaml`.
-9. Confirm fullscreen appears on the TV.
+9. Confirm the maximized app appears fully on the TV.
 10. Register one test motion and verify saved data appears under `data/`.
 
 ## Troubleshooting
@@ -319,10 +319,13 @@ python tools/check_camera.py --config configs/debug.yaml
 
 Then reopen the Camera privacy settings.
 
-If fullscreen opens on the wrong display:
+If the app opens on the wrong display or is cropped:
 
 - Change OS display settings so the TV is primary.
-- Keep `runtime.fullscreen: false` temporarily while debugging.
+- Keep `runtime.display_mode: maximized` or `windowed` while positioning the window.
+- Set `runtime.screen_index` to another display index if needed.
+- Lower `ui.window_scale` if the display has TV overscan or unusual scaling.
+- Press `F11` only after the app is visible on the correct display; press `Esc` to leave fullscreen.
 
 If MediaPipe is unstable:
 

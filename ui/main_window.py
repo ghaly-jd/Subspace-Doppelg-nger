@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from PyQt6.QtWidgets import QMainWindow, QStackedWidget
+from PyQt6.QtCore import QPoint, QRect, Qt
+from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 
 from shared.config import get_nested
 from ui.archive_screen import ArchiveScreen
@@ -49,6 +50,16 @@ class MainWindow(QMainWindow):
         self._connect_navigation()
         self._apply_initial_geometry()
 
+    def show_for_runtime(self) -> None:
+        self._apply_initial_geometry()
+        mode = self._display_mode()
+        if mode == "fullscreen":
+            self.showFullScreen()
+        elif mode == "maximized":
+            self.showMaximized()
+        else:
+            self.show()
+
     def _connect_navigation(self) -> None:
         self.home_screen.register_requested.connect(self.show_register)
         self.home_screen.match_requested.connect(self.show_match)
@@ -73,9 +84,56 @@ class MainWindow(QMainWindow):
             screen.back_requested.connect(self.show_home)
 
     def _apply_initial_geometry(self) -> None:
-        width = int(get_nested(self.config, "ui", "screen_width", default=1280))
-        height = int(get_nested(self.config, "ui", "screen_height", default=720))
+        screen_geometry = self._target_screen_geometry()
+        requested_width = int(get_nested(self.config, "ui", "screen_width", default=1280))
+        requested_height = int(get_nested(self.config, "ui", "screen_height", default=720))
+        window_scale = float(get_nested(self.config, "ui", "window_scale", default=0.95))
+        window_scale = max(0.5, min(1.0, window_scale))
+
+        max_width = int(screen_geometry.width() * window_scale)
+        max_height = int(screen_geometry.height() * window_scale)
+        width = min(max(800, min(requested_width, max_width)), screen_geometry.width())
+        height = min(max(540, min(requested_height, max_height)), screen_geometry.height())
         self.resize(width, height)
+        self.move(self._centered_top_left(screen_geometry, width, height))
+
+    def _display_mode(self) -> str:
+        configured = str(get_nested(self.config, "runtime", "display_mode", default="")).strip().lower()
+        if configured in {"windowed", "maximized", "fullscreen"}:
+            return configured
+        if bool(get_nested(self.config, "runtime", "fullscreen", default=False)):
+            return "fullscreen"
+        return "windowed"
+
+    def _target_screen_geometry(self) -> QRect:
+        screens = QApplication.screens()
+        screen_index = int(get_nested(self.config, "runtime", "screen_index", default=-1))
+        if 0 <= screen_index < len(screens):
+            return screens[screen_index].availableGeometry()
+
+        primary = QApplication.primaryScreen()
+        if primary is not None:
+            return primary.availableGeometry()
+        return QRect(0, 0, 1280, 720)
+
+    def _centered_top_left(self, geometry: QRect, width: int, height: int) -> QPoint:
+        x = geometry.x() + max(0, (geometry.width() - width) // 2)
+        y = geometry.y() + max(0, (geometry.height() - height) // 2)
+        return QPoint(x, y)
+
+    def keyPressEvent(self, event) -> None:
+        if event.key() == Qt.Key.Key_F11:
+            if self.isFullScreen():
+                self.showNormal()
+                self._apply_initial_geometry()
+            else:
+                self.showFullScreen()
+            return
+        if event.key() == Qt.Key.Key_Escape and self.isFullScreen():
+            self.showNormal()
+            self._apply_initial_geometry()
+            return
+        super().keyPressEvent(event)
 
     def show_home(self) -> None:
         self.register_screen.stop_capture()

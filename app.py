@@ -27,6 +27,7 @@ def print_runtime_summary(config_path: Path, config: dict) -> None:
     print(f"Pose engine: {get_nested(config, 'pose', 'engine', default='unknown')}")
     print(f"Runtime device: {get_nested(config, 'runtime', 'device', default='unknown')}")
     print(f"Fullscreen: {get_nested(config, 'runtime', 'fullscreen', default=False)}")
+    print(f"Display mode: {get_nested(config, 'runtime', 'display_mode', default='legacy')}")
     print(f"Camera source: {get_nested(config, 'camera', 'source', default=0)}")
 
 
@@ -45,10 +46,7 @@ def run_ui(config_path: Path, config: dict) -> int:
     apply_theme(app)
 
     window = MainWindow(config, str(config_path))
-    if bool(get_nested(config, "runtime", "fullscreen", default=False)):
-        window.showFullScreen()
-    else:
-        window.show()
+    window.show_for_runtime()
 
     return app.exec()
 

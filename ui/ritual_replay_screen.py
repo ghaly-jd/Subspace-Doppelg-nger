@@ -7,7 +7,16 @@ from typing import Any
 import numpy as np
 from PyQt6.QtCore import QPointF, QRectF, Qt, QTimer
 from PyQt6.QtGui import QColor, QFont, QPainter, QPen, QPixmap
-from PyQt6.QtWidgets import QComboBox, QFrame, QHBoxLayout, QLabel, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import (
+    QComboBox,
+    QFrame,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QVBoxLayout,
+)
 
 from shared.motion_profile import FULL_BODY_PROFILE, WAVE_PROFILE, MotionProfile
 from shared.pose_schema import KEYPOINT_NAMES, SKELETON_EDGES
@@ -48,8 +57,9 @@ class RitualReplayScreen(BaseScreen):
         self.compare_select.addItem("3 skeletons", 3)
         self.compare_select.currentIndexChanged.connect(self._load_selected_replay)
         self.canvas = QLabel("No replay loaded")
-        self.canvas.setMinimumSize(760, 420)
+        self.canvas.setMinimumSize(520, 280)
         self.canvas.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.canvas.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Ignored)
         self.play_button = QPushButton("[ PLAY / PAUSE ]")
         self.play_button.clicked.connect(self._toggle_playback)
         self.reset_button = QPushButton("[ RESET ]")
@@ -80,7 +90,12 @@ class RitualReplayScreen(BaseScreen):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self._advance_frame)
 
-        root.addWidget(panel, 1)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setWidget(panel)
+
+        root.addWidget(scroll, 1)
         self.add_back_button(root)
 
     def set_result(self, result: dict[str, Any], *, autoplay: bool = False) -> None:
@@ -269,8 +284,8 @@ class RitualReplayScreen(BaseScreen):
         if len(self.replay_items) < 2:
             return
 
-        width = max(760, self.canvas.width())
-        height = max(420, self.canvas.height())
+        width = max(360, self.canvas.width())
+        height = max(240, self.canvas.height())
         pixmap = QPixmap(width, height)
         pixmap.fill(QColor("#030810"))
 
@@ -452,8 +467,8 @@ class RitualReplayScreen(BaseScreen):
             return 150.0
         span = finite.max(axis=0) - finite.min(axis=0)
         max_span = max(float(span.max()), 0.2)
-        panel_width = max(240.0, self.canvas.width() / max(2, len(sequences)) - 64.0)
-        panel_height = max(300.0, self.canvas.height() - 120.0)
+        panel_width = max(160.0, self.canvas.width() / max(2, len(sequences)) - 64.0)
+        panel_height = max(180.0, self.canvas.height() - 120.0)
         return min(panel_width * 0.68, panel_height * 0.72) / max_span
 
     def _overall_matches(self, result: dict[str, Any]) -> list[dict[str, Any]]:

@@ -4,7 +4,7 @@ from typing import Any
 
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QFrame, QLabel, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import QFrame, QLabel, QPushButton, QScrollArea, QSizePolicy, QVBoxLayout
 
 from shared.camera_manager import CameraManager
 from shared.config import get_nested
@@ -37,9 +37,10 @@ class LivePoseScreen(BaseScreen):
         panel_layout.setSpacing(14)
 
         self.preview = QLabel("Camera preview inactive")
-        self.preview.setMinimumSize(640, 360)
+        self.preview.setMinimumSize(480, 260)
         self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.preview.setScaledContents(False)
+        self.preview.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Ignored)
         self.status_label = self.make_status("Press START to open camera and run pose tracking.")
 
         start_button = QPushButton("[ START LIVE SKELETON PREVIEW ]")
@@ -56,7 +57,12 @@ class LivePoseScreen(BaseScreen):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
 
-        root.addWidget(panel, 1)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setWidget(panel)
+
+        root.addWidget(scroll, 1)
         self.add_back_button(root)
 
     def start(self) -> None:

@@ -5,7 +5,16 @@ from typing import Any
 
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QApplication, QComboBox, QFrame, QLabel, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QFrame,
+    QLabel,
+    QPushButton,
+    QScrollArea,
+    QSizePolicy,
+    QVBoxLayout,
+)
 
 from shared.camera_manager import CameraManager
 from shared.config import get_nested
@@ -60,9 +69,10 @@ class MatchScreen(BaseScreen):
         )
 
         self.preview = QLabel("Camera preview inactive")
-        self.preview.setMinimumSize(640, 300)
+        self.preview.setMinimumSize(480, 220)
         self.preview.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.preview.setScaledContents(False)
+        self.preview.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Ignored)
 
         self.phase_title = QLabel("READY")
         self.phase_title.setObjectName("phasePromptTitle")
@@ -95,7 +105,12 @@ class MatchScreen(BaseScreen):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_capture_frame)
 
-        root.addWidget(panel, 1)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setWidget(panel)
+
+        root.addWidget(scroll, 1)
         self.add_back_button(root)
         self._update_candidate_status()
 

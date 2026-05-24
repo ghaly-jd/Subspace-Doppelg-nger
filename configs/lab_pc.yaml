@@ -7,11 +7,14 @@ camera:
 
 runtime:
   device: cpu
-  fullscreen: true
+  fullscreen: false
+  display_mode: maximized
+  screen_index: 0
 
 ui:
   screen_width: 1920
   screen_height: 1080
+  window_scale: 0.95
 
 pose:
   engine: yolo
