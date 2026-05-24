@@ -3,13 +3,14 @@ from __future__ import annotations
 from typing import Any
 
 from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtWidgets import QFrame, QLabel, QPushButton, QVBoxLayout
+from PyQt6.QtWidgets import QFrame, QLabel, QPushButton, QScrollArea, QVBoxLayout
 
 from ui.base_screen import BaseScreen
 
 
 class ResultScreen(BaseScreen):
     replay_requested = pyqtSignal(dict)
+    galaxy_requested = pyqtSignal(dict)
 
     def __init__(self) -> None:
         super().__init__()
@@ -33,6 +34,9 @@ class ResultScreen(BaseScreen):
         self.replay_button = QPushButton("[ PLAY SKELETON COMPARISON ]")
         self.replay_button.setEnabled(False)
         self.replay_button.clicked.connect(self._request_replay)
+        self.galaxy_button = QPushButton("[ VIEW 3D SUBSPACE GALAXY ]")
+        self.galaxy_button.setEnabled(False)
+        self.galaxy_button.clicked.connect(self._request_galaxy)
         self.explain_button = QPushButton("[ EXPLAIN MATCH ]")
         self.explain_button.setEnabled(False)
 
@@ -41,10 +45,16 @@ class ResultScreen(BaseScreen):
         panel_layout.addWidget(self.detail_label)
         panel_layout.addWidget(self.rank_label)
         panel_layout.addWidget(self.replay_button)
+        panel_layout.addWidget(self.galaxy_button)
         panel_layout.addWidget(self.explain_button)
         panel_layout.addStretch(1)
 
-        root.addWidget(panel, 1)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setWidget(panel)
+
+        root.addWidget(scroll, 1)
         self.add_back_button(root)
 
     def set_result(self, result: dict[str, Any]) -> None:
@@ -59,10 +69,12 @@ class ResultScreen(BaseScreen):
             self.detail_label.setText("No comparable registrations were available.")
             self.rank_label.setText("")
             self.replay_button.setEnabled(False)
+            self.galaxy_button.setEnabled(False)
             return
 
         best = matches[0]
         self.replay_button.setEnabled(False)
+        self.galaxy_button.setEnabled(True)
         self.match_label.setText(str(best.get("nickname", "Unknown")))
         angles = best.get("canonical_angles_degrees", [])
         angle_text = ", ".join(f"{float(angle):.1f}" for angle in angles[:5])
@@ -82,9 +94,11 @@ class ResultScreen(BaseScreen):
             self.detail_label.setText("No comparable Motion Ritual registrations were available.")
             self.rank_label.setText("")
             self.replay_button.setEnabled(False)
+            self.galaxy_button.setEnabled(False)
             return
 
         self.replay_button.setEnabled(True)
+        self.galaxy_button.setEnabled(True)
         self.match_label.setText(
             f"OVERALL MOTION TWIN: {best.get('nickname', 'Unknown')} "
             f"- {float(best.get('similarity', 0.0)):.1f}%"
@@ -166,6 +180,10 @@ class ResultScreen(BaseScreen):
     def _request_replay(self) -> None:
         if self.result:
             self.replay_requested.emit(self.result)
+
+    def _request_galaxy(self) -> None:
+        if self.result:
+            self.galaxy_requested.emit(self.result)
 
     def _rank_text(self, matches: list[dict[str, Any]]) -> str:
         lines = ["Top matches:"]

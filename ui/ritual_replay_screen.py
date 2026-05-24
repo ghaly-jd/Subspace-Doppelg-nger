@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from PyQt6.QtCore import QPointF, QRectF, Qt, QTimer
+from PyQt6.QtCore import QPointF, QRectF, Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QColor, QFont, QPainter, QPen, QPixmap
 from PyQt6.QtWidgets import (
     QComboBox,
@@ -32,6 +32,8 @@ REPLAY_COLORS = (
 
 
 class RitualReplayScreen(BaseScreen):
+    galaxy_requested = pyqtSignal(dict)
+
     def __init__(self) -> None:
         super().__init__()
         self.result: dict[str, Any] | None = None
@@ -64,6 +66,8 @@ class RitualReplayScreen(BaseScreen):
         self.play_button.clicked.connect(self._toggle_playback)
         self.reset_button = QPushButton("[ RESET ]")
         self.reset_button.clicked.connect(self._reset_playback)
+        self.galaxy_button = QPushButton("[ 3D SUBSPACE GALAXY ]")
+        self.galaxy_button.clicked.connect(self._request_galaxy)
         self.speed_select = QComboBox()
         self.speed_select.addItem("0.5x", 66)
         self.speed_select.addItem("1x", 33)
@@ -78,6 +82,7 @@ class RitualReplayScreen(BaseScreen):
         controls.addWidget(self.play_button, 2)
         controls.addWidget(self.reset_button, 1)
         controls.addWidget(self.speed_select, 1)
+        controls.addWidget(self.galaxy_button, 2)
 
         panel_layout.addWidget(self.make_title("SKELETON RITUAL REPLAY"))
         panel_layout.addWidget(self.replay_select)
@@ -268,6 +273,10 @@ class RitualReplayScreen(BaseScreen):
     def _timer_interval_ms(self) -> int:
         value = self.speed_select.currentData()
         return int(value) if value is not None else 33
+
+    def _request_galaxy(self) -> None:
+        if self.result:
+            self.galaxy_requested.emit(self.result)
 
     def _advance_frame(self) -> None:
         if len(self.replay_items) < 2:

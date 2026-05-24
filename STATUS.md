@@ -113,6 +113,7 @@ Next target: run a real camera-based Motion Ritual registration and visitor scan
 - Documented display-mode troubleshooting for TV deployment.
 - Stabilized camera preview layouts so pixmaps do not push lower controls off-screen, and made register, match, and live preview panels scrollable on smaller displays.
 - Stabilized the skeleton comparison replay layout with a scrollable panel and responsive canvas sizing so playback controls are not pushed below the window.
+- Added a rotatable 3D Subspace Galaxy view that projects query and candidate motion subspaces from Grassmann/canonical-angle distances and opens from result or replay screens.
 
 ### 2026-05-23
 

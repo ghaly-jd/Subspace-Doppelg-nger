@@ -14,6 +14,7 @@ from ui.match_screen import MatchScreen
 from ui.register_screen import RegisterScreen
 from ui.result_screen import ResultScreen
 from ui.ritual_replay_screen import RitualReplayScreen
+from ui.subspace_galaxy_screen import SubspaceGalaxyScreen
 
 
 class MainWindow(QMainWindow):
@@ -32,6 +33,7 @@ class MainWindow(QMainWindow):
         self.archive_screen = ArchiveScreen(config)
         self.result_screen = ResultScreen()
         self.replay_screen = RitualReplayScreen()
+        self.galaxy_screen = SubspaceGalaxyScreen()
         self.explanation_screen = ExplanationScreen()
         self.live_pose_screen = LivePoseScreen(config)
 
@@ -42,6 +44,7 @@ class MainWindow(QMainWindow):
             self.archive_screen,
             self.result_screen,
             self.replay_screen,
+            self.galaxy_screen,
             self.explanation_screen,
             self.live_pose_screen,
         ):
@@ -71,6 +74,8 @@ class MainWindow(QMainWindow):
         self.match_screen.live_pose_requested.connect(self.show_live_pose)
         self.match_screen.match_completed.connect(self.show_match_result)
         self.result_screen.replay_requested.connect(self.show_replay_result)
+        self.result_screen.galaxy_requested.connect(self.show_subspace_galaxy)
+        self.replay_screen.galaxy_requested.connect(self.show_subspace_galaxy)
 
         for screen in (
             self.register_screen,
@@ -78,6 +83,7 @@ class MainWindow(QMainWindow):
             self.archive_screen,
             self.result_screen,
             self.replay_screen,
+            self.galaxy_screen,
             self.explanation_screen,
             self.live_pose_screen,
         ):
@@ -165,6 +171,11 @@ class MainWindow(QMainWindow):
     def show_replay_result(self, result: dict[str, Any], *, autoplay: bool = False) -> None:
         self.replay_screen.set_result(result, autoplay=autoplay)
         self.stack.setCurrentWidget(self.replay_screen)
+
+    def show_subspace_galaxy(self, result: dict[str, Any]) -> None:
+        self.replay_screen.stop()
+        self.galaxy_screen.set_result(result)
+        self.stack.setCurrentWidget(self.galaxy_screen)
 
     def show_explanation(self) -> None:
         self.stack.setCurrentWidget(self.explanation_screen)
